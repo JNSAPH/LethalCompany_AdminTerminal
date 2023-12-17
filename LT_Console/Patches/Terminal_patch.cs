@@ -2,6 +2,7 @@
 using GameNetcodeStuff;
 using HarmonyLib;
 using System.Collections;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace LT_Console.Patches
@@ -84,18 +85,23 @@ namespace LT_Console.Patches
                             }
                         }
                         break;
-                    case "set_QuotaGoal":
+                    case "set_quota":
                         if (command_parts.Length > 1)
                         {
                             int quota = int.Parse(command_parts[1]);
                             LT_ConsoleModBase.Instance.ManualLogSource.LogInfo("Quota: " + quota);
-                            HUDManager.Instance.DisplayDaysLeft(quota);
-                            TimeOfDay.Instance.quotaFulfilled = quota;
                             TimeOfDay.Instance.SyncNewProfitQuotaClientRpc(quota, 0, 0);
                         }
                         break;
+
                     default:
-                        // Handle the default case if no recognized command is found
+                        // Log all custom Commands
+                        LT_ConsoleModBase.Instance.ManualLogSource.LogInfo("Unknown Command, try:" +
+                            "\n > set_Sprint true/false" +
+                            "\n > set_Money <amount>" +
+                            "\n > set_Jump <amount>" +
+                            "\n > set_Speed <amount>"+
+                            "\n > set_quota <quota>");
                         break;
                 }
             }
