@@ -55,6 +55,7 @@ namespace LT_Console.Patches
                             }
                         }
                         break;
+
                     case "set_Money":
                         if (command_parts.Length > 1)
                         {
@@ -64,6 +65,7 @@ namespace LT_Console.Patches
                             __instance.SyncGroupCreditsClientRpc(money, __instance.numberOfItemsInDropship);
                         }
                         break;
+
                     case "set_Jump":
                         if (command_parts.Length > 1)
                         {
@@ -72,6 +74,7 @@ namespace LT_Console.Patches
                             playerController.jumpForce = jump;
                         }
                         break;
+
                     case "set_Speed":
                         if (command_parts.Length > 1)
                         {
@@ -85,7 +88,7 @@ namespace LT_Console.Patches
                             }
                         }
                         break;
-                    case "set_quota":
+                    case "reset_QoutaTo":
                         if (command_parts.Length > 1)
                         {
                             int quota = int.Parse(command_parts[1]);
@@ -101,7 +104,7 @@ namespace LT_Console.Patches
                             "\n > set_Money <amount>" +
                             "\n > set_Jump <amount>" +
                             "\n > set_Speed <amount>"+
-                            "\n > set_quota <quota>");
+                            "\n > reset_QoutaTo <quota>");
                         break;
                 }
             }
