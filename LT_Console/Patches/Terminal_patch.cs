@@ -2,6 +2,8 @@
 using GameNetcodeStuff;
 using HarmonyLib;
 using System.Collections;
+using System.Text;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -30,6 +32,31 @@ namespace LT_Console.Patches
             return playerController != null;
         }
 
+        static void add_to_chat(string chatMessage)
+        {
+            HUDManager.Instance.lastChatMessage = chatMessage;
+            HUDManager.Instance.PingHUDElement(HUDManager.Instance.Chat, 4f);
+            if (HUDManager.Instance.ChatMessageHistory.Count >= 4)
+            {
+                HUDManager.Instance.chatText.text.Remove(0, HUDManager.Instance.ChatMessageHistory[0].Length);
+                HUDManager.Instance.ChatMessageHistory.Remove(HUDManager.Instance.ChatMessageHistory[0]);
+            }
+
+            StringBuilder stringBuilder = new StringBuilder(chatMessage);
+            stringBuilder.Replace("[playerNum0]", StartOfRound.Instance.allPlayerScripts[0].playerUsername);
+            stringBuilder.Replace("[playerNum1]", StartOfRound.Instance.allPlayerScripts[1].playerUsername);
+            stringBuilder.Replace("[playerNum2]", StartOfRound.Instance.allPlayerScripts[2].playerUsername);
+            stringBuilder.Replace("[playerNum3]", StartOfRound.Instance.allPlayerScripts[3].playerUsername);
+            chatMessage = stringBuilder.ToString();
+            string item = ((!string.IsNullOrEmpty(HUDManager.Instance.chatText.text)) ? "\n" : "") + chatMessage;
+            HUDManager.Instance.ChatMessageHistory.Add(item);
+            HUDManager.Instance.chatText.text += "";
+            for (int i = 0; i < HUDManager.Instance.ChatMessageHistory.Count; i++)
+            {
+                TextMeshProUGUI textMeshProUGUI = HUDManager.Instance.chatText;
+                textMeshProUGUI.text = textMeshProUGUI.text + "\n" + HUDManager.Instance.ChatMessageHistory[i];
+            }
+        }
 
         [HarmonyPatch("ParsePlayerSentence")]
         [HarmonyPostfix]
@@ -55,6 +82,7 @@ namespace LT_Console.Patches
                                 sprintUnlim = false;
                         }
 
+                        add_to_chat("Unlimited Sprint has been set to " + sprintUnlim + "!");
                         LT_ConsoleModBase.Instance.ManualLogSource.LogInfo(input_command);
                         break;
 
@@ -65,6 +93,7 @@ namespace LT_Console.Patches
                             __instance.groupCredits = money;
                             __instance.SyncGroupCreditsClientRpc(money, __instance.numberOfItemsInDropship);
 
+                            add_to_chat("Money has been set to " + money + "!");
                             LT_ConsoleModBase.Instance.ManualLogSource.LogInfo("Money: " + money);
                         }
                         break;
@@ -80,6 +109,7 @@ namespace LT_Console.Patches
                                 playerController.jumpForce = currentController.jumpForce;
                             }
 
+                            add_to_chat("Jump has been set to " + jump + "!");
                             LT_ConsoleModBase.Instance.ManualLogSource.LogInfo("Jump: " + jump);
                             LT_ConsoleModBase.Instance.ManualLogSource.LogInfo("for Player: " + playerController.playerUsername);
                         }
@@ -96,6 +126,7 @@ namespace LT_Console.Patches
                                 playerController.movementSpeed = currentController.movementSpeed;
                             }
 
+                            add_to_chat("Speed has been set to " + speed + "!");
                             LT_ConsoleModBase.Instance.ManualLogSource.LogInfo("Speed: " + speed);
                             LT_ConsoleModBase.Instance.ManualLogSource.LogInfo("for Player: " + playerController.playerUsername);
                         }
@@ -106,7 +137,18 @@ namespace LT_Console.Patches
                             int quota = int.Parse(command_parts[1]);
                             TimeOfDay.Instance.SyncNewProfitQuotaClientRpc(quota, 0, 0);
 
+                            add_to_chat("Quota has been reset to " + quota + "!");
                             LT_ConsoleModBase.Instance.ManualLogSource.LogInfo("Quota: " + quota);
+                        }
+                        break;
+                    case "chat_test":
+                        if (command_parts.Length > 1)
+                        {
+                            string message = command_parts[1];
+
+                            add_to_chat(message);
+
+                            LT_ConsoleModBase.Instance.ManualLogSource.LogInfo("Message: " + message);
                         }
                         break;
 
@@ -117,7 +159,8 @@ namespace LT_Console.Patches
                             "\n > set_Money <amount>" +
                             "\n > set_Jump <amount>" +
                             "\n > set_Speed <amount>" +
-                            "\n > reset_QoutaTo <quota>");
+                            "\n > reset_QoutaTo <quota>" +
+                            "\n > chat_test <msg>");
                         break;
                 }
             }

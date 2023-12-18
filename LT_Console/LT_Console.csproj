@@ -68,6 +68,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y "$(TargetDir)LT_Console.dll" "C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\BepInEx\plugins\"
+xcopy /Y "$(TargetDir)LT_Console.dll" "C:\Users\JNSAP\AppData\Roaming\Thunderstore Mod Manager\DataFolder\LethalCompany\profiles\Default\BepInEx\plugins\"
 </PostBuildEvent>
   </PropertyGroup>
 </Project>
