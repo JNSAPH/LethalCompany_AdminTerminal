@@ -13,7 +13,7 @@ namespace LT_Console.Patches
         static void Postfix_Update(PlayerControllerB __instance)
         {
             // Check if the instance is already set and is the same
-            if (__instance != null && !Terminal_patch.IsPlayerControllerSet(__instance))
+            if (__instance != null && Terminal_patch.IsPlayerControllerSet(__instance) == false)
             {
                 Terminal_patch.SetPlayerController(__instance);
             }
@@ -21,11 +21,6 @@ namespace LT_Console.Patches
             if (Terminal_patch.sprintUnlim)
             {
                 __instance.sprintMeter = 1f;
-            }
-
-            if (Terminal_patch.playerIsUnkillable)
-            {
-                __instance.health = 100;
             }
         }
     }
